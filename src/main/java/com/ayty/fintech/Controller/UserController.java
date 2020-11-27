@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ayty.fintech.Entity.User;
+import com.ayty.fintech.Exception.ResourceNotFoundException;
 import com.ayty.fintech.Repository.UserRepository;
+import com.ayty.fintech.Service.UserService;
 
 @RestController
 public class UserController {
@@ -30,23 +32,24 @@ public class UserController {
 		
 	}
 	
+	@Autowired
+	UserService userService;	
+	
 	@GetMapping("/users")
 	public ResponseEntity<List<User>> getAllUsers() {
-		List<User> userList = userRepository.findAll();
-		if(userList.isEmpty()) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		} else {
-			return new ResponseEntity<List<User>>(userList, HttpStatus.OK);
+		try {
+			return new ResponseEntity<>(this.userService.getAllUsers(), HttpStatus.OK);
+		} catch (ResourceNotFoundException e) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND); 
 		}
 	}
 	
 	@GetMapping("/users/{id}")
 	public ResponseEntity<User> getOneUser(@PathVariable(value = "id") long id){
-		Optional<User> userFirst = userRepository.findById(id);
-		if(!userFirst.isPresent()) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		} else {
-			return new ResponseEntity<User>(userFirst.get(), HttpStatus.OK);
+		try {
+			return new ResponseEntity<>(this.userService.getOneUser(id), HttpStatus.OK);
+		} catch (ResourceNotFoundException e) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND); 
 		}
 	}
 	
