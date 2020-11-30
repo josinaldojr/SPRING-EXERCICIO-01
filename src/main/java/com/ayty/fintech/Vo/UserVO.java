@@ -1,6 +1,8 @@
 package com.ayty.fintech.Vo;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.modelmapper.ModelMapper;
 
@@ -33,6 +35,14 @@ public class UserVO implements Serializable{
 	
 	public static UserVO create(User user) {
 		return new ModelMapper().map(user, UserVO.class);
+	}
+	
+	public static List<UserVO> createAllUsers(List<User> user) {
+		List<UserVO> listVO = new ArrayList<UserVO>();
+		for(int i = 0; i < user.size(); i++) {
+			listVO.add(create(user.get(i)));
+		}
+		return listVO;
 	}
 	
 	public long getId() {

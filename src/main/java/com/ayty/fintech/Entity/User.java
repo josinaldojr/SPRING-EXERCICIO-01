@@ -10,9 +10,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @Table
@@ -20,31 +20,44 @@ public class User implements Serializable{
 	private static final long serialVersionUID = 1L;
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;
 	
 	@Column(unique = true, nullable = false)
-	@JsonProperty("full_name")
-	private String fullname;
+	private String cpf;
+
+	@Column(nullable = false)
+	private String fullName;
 	
-	@Column(unique = true, nullable = false)
-	private String CPF;
-	
-	@Column(unique = true, nullable = false)
-	private Integer phone;
-	
-	@Column(unique = true, nullable = false)
+	@Column(nullable = false)
 	private String email;
 	
 	@Column(nullable = false)
 	private String password;
 	
-	@OneToOne(targetEntity = Consummer.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@Column(nullable = false)
+	private Integer phone;
+
+	@OneToOne
+	@PrimaryKeyJoinColumn
 	private Consummer consumer;
 	
-	@OneToOne(targetEntity = Seller.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@OneToOne
+	@PrimaryKeyJoinColumn
 	private Seller seller;
 	
+	public User() {}
+	
+	public User(long id, String cpf, String fullName, String email, String password, Integer phone) {
+		super();
+		this.id = id;
+		this.cpf = cpf;
+		this.fullName = fullName;
+		this.email = email;
+		this.password = password;
+		this.phone = phone;
+	}
+
 	public long getId() {
 		return id;
 	}
@@ -53,17 +66,17 @@ public class User implements Serializable{
 		this.id = id;
 	}
 	public String getFullname() {
-		return fullname;
+		return fullName;
 	}
 
 	public void setFullname(String fullname) {
-		this.fullname = fullname;
+		this.fullName = fullname;
 	}
 	public String getCPF() {
-		return CPF;
+		return cpf;
 	}
 	public void setCPF(String cPF) {
-		CPF = cPF;
+		cpf = cPF;
 	}
 	public Integer getPhone() {
 		return phone;
@@ -77,10 +90,18 @@ public class User implements Serializable{
 	public void setEmail(String email) {
 		this.email = email;
 	}
+
 	public String getPassword() {
 		return password;
 	}
 	public void setPassword(String password) {
 		this.password = password;
 	}
+	
+	@Override
+	public String toString() {
+		return "User [id=" + id + ", cpf=" + cpf + ", fullName=" + fullName + ", email=" + email + ", password="
+				+ password + ", phone=" + phone + ", consumer=" + consumer.toString() + ", seller=" + seller + "]";
+	}
+	
 }

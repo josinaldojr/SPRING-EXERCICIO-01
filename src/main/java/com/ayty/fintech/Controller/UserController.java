@@ -1,7 +1,6 @@
 package com.ayty.fintech.Controller;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,26 +16,24 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ayty.fintech.Entity.User;
 import com.ayty.fintech.Exception.ResourceNotFoundException;
-import com.ayty.fintech.Repository.UserRepository;
+import com.ayty.fintech.Exception.UserAlreadyExistException;
 import com.ayty.fintech.Service.UserService;
+import com.ayty.fintech.Vo.UserVO;
 
 @RestController
 public class UserController {
 	
 	@Autowired
-	UserRepository userRepository;	
+	UserService userService;	
 	
-	public UserController(UserRepository userRepository) {
+	public UserController(UserService userService) {
 		super();
-		this.userRepository = userRepository;
+		this.userService= userService;
 		
 	}
 	
-	@Autowired
-	UserService userService;	
-	
 	@GetMapping("/users")
-	public ResponseEntity<List<User>> getAllUsers() {
+	public ResponseEntity<List<UserVO>> getAllUsers() {
 		try {
 			return new ResponseEntity<>(this.userService.getAllUsers(), HttpStatus.OK);
 		} catch (ResourceNotFoundException e) {
@@ -45,7 +42,7 @@ public class UserController {
 	}
 	
 	@GetMapping("/users/{id}")
-	public ResponseEntity<User> getOneUser(@PathVariable(value = "id") long id){
+	public ResponseEntity<UserVO> getOneUser(@PathVariable(value = "id") long id){
 		try {
 			return new ResponseEntity<>(this.userService.getOneUser(id), HttpStatus.OK);
 		} catch (ResourceNotFoundException e) {
@@ -54,30 +51,30 @@ public class UserController {
 	}
 	
 	@PostMapping("/users")
-	public ResponseEntity<User> saveUser(@RequestBody @Validated User user) {
-		return new ResponseEntity<User> (userRepository.save(user), HttpStatus.CREATED);
+	public ResponseEntity<UserVO> saveUser(@RequestBody @Validated User user) {
+		try {
+			return new ResponseEntity<UserVO> (this.userService.saveUser(user), HttpStatus.CREATED);
+		} catch (UserAlreadyExistException e) {
+			return new ResponseEntity<>(HttpStatus.CONFLICT); 
+		}
 	}
 	
 	@DeleteMapping("/users/{id}")
 	public ResponseEntity<?> deleteUser(@PathVariable(value = "id") long id) {
-		Optional<User> userFirst = userRepository.findById(id);
-		if(!userFirst.isPresent()) {
-			return new ResponseEntity<> (HttpStatus.NOT_FOUND);
-		} else {
-			userRepository.delete(userFirst.get());
-			return new ResponseEntity<>(HttpStatus.OK);
+		try {
+			this.userService.deleteUser(id);
+			return ResponseEntity.ok().build();
+		} catch (ResourceNotFoundException e) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND); 
 		}
 	}
 	
 	@PutMapping("/users/{id}")
-	public ResponseEntity<User> updateUser(@PathVariable(value = "id")long id, @RequestBody @Validated User user) {
-		Optional<User> userFirst = userRepository.findById(id);
-		if(!userFirst.isPresent()) {
-			return new ResponseEntity<> (HttpStatus.NOT_FOUND);
-		} else {
-			user.setId(userFirst.get().getId());
-			return new ResponseEntity<User>(userRepository.save(user), HttpStatus.OK);
+	public ResponseEntity<UserVO> updateUser(@PathVariable(value = "id")long id, @RequestBody @Validated User user) {
+		try {
+			return new ResponseEntity<>(this.userService.updateUser(id, user), HttpStatus.OK);
+		} catch (ResourceNotFoundException e) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND); 
 		}
 	}
-	
 }

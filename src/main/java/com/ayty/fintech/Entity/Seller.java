@@ -1,10 +1,13 @@
 package com.ayty.fintech.Entity;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -25,21 +28,22 @@ public class Seller {
 	@Column(nullable = false)
 	private String username;
 	
-	@Column(nullable = false, unique = true)
-	@JsonProperty(value = "user_id")
-	private long userId;
-	
 	@Column(nullable = false)
 	@JsonProperty(value = "company_name")
 	private String companyName;
 	
-	public Seller(long id, String CNPJ, String fantasyName, String username, long userId, String companyName) {
+	@OneToOne(targetEntity = User.class, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private User user;
+	
+	public Seller() {}
+	
+	public Seller(long id, String CNPJ, String fantasyName, String username, User user, String companyName) {
 		super();
 		this.id = id;
 		this.CNPJ = CNPJ;
 		this.fantasyName = fantasyName;
 		this.username = username;
-		this.userId = userId;
+		this.user = user;
 		this.companyName = companyName;
 	}
 
@@ -75,26 +79,26 @@ public class Seller {
 		this.username = username;
 	}
 
-	public long getUserId() {
-		return userId;
-	}
-
-	public void setUserId(long userId) {
-		this.userId = userId;
-	}
-
 	public String getCompanyName() {
 		return companyName;
 	}
-	
+
 	public void setCompanyName(String companyName) {
 		this.companyName = companyName;
 	}
-	
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+
 	@Override
 	public String toString() {
 		return "Seller [id=" + id + ", CNPJ=" + CNPJ + ", fantasyName=" + fantasyName + ", username=" + username
-				+ ", userId=" + userId + ", companyName=" + companyName + "]";
+				+ ", companyName=" + companyName + ", user=" + user + "]";
 	}
 
 	@Override
@@ -105,7 +109,7 @@ public class Seller {
 		result = prime * result + ((companyName == null) ? 0 : companyName.hashCode());
 		result = prime * result + ((fantasyName == null) ? 0 : fantasyName.hashCode());
 		result = prime * result + (int) (id ^ (id >>> 32));
-		result = prime * result + (int) (userId ^ (userId >>> 32));
+		result = prime * result + ((user == null) ? 0 : user.hashCode());
 		result = prime * result + ((username == null) ? 0 : username.hashCode());
 		return result;
 	}
@@ -136,7 +140,10 @@ public class Seller {
 			return false;
 		if (id != other.id)
 			return false;
-		if (userId != other.userId)
+		if (user == null) {
+			if (other.user != null)
+				return false;
+		} else if (!user.equals(other.user))
 			return false;
 		if (username == null) {
 			if (other.username != null)

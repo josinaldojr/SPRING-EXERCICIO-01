@@ -5,9 +5,11 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import com.ayty.fintech.Entity.Consummer;
 import com.ayty.fintech.Entity.User;
 
+
 @Repository
-public interface UserRepository  extends JpaRepository<User, Long>{
-	Optional<User> findByCpf(String cpf);
+public interface ConsummerRepository extends JpaRepository<Consummer, Long>{
+	Optional<User> findByUsername(String username);
 }

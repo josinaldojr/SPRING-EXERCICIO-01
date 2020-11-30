@@ -20,13 +20,15 @@ public class Consummer {
 	
 	@Column(nullable = false, unique = true)
 	@JsonProperty(value = "user_id")
-	private long userId;
+	private User user;
 	
-	public Consummer(long id, String username, long userId) {
+	public Consummer() {}
+	
+	public Consummer(long id, String username, User user) {
 		super();
 		this.id = id;
 		this.username = username;
-		this.userId = userId;
+		this.user = user;
 	}
 
 	public long getId() {
@@ -45,18 +47,17 @@ public class Consummer {
 		this.username = username;
 	}
 
-	public long getUserId() {
-		return userId;
+	public User getUser() {
+		return user;
 	}
 
-	public void setUserId(long userId) {
-		this.userId = userId;
+	public void setUser(User user) {
+		this.user = user;
 	}
-	
-	
+
 	@Override
 	public String toString() {
-		return "Consummer [id=" + id + ", username=" + username + ", userId=" + userId + "]";
+		return "Consummer [id=" + id + ", username=" + username + ", user=" + user + "]";
 	}
 
 	@Override
@@ -64,7 +65,7 @@ public class Consummer {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + (int) (id ^ (id >>> 32));
-		result = prime * result + (int) (userId ^ (userId >>> 32));
+		result = prime * result + ((user == null) ? 0 : user.hashCode());
 		result = prime * result + ((username == null) ? 0 : username.hashCode());
 		return result;
 	}
@@ -80,7 +81,10 @@ public class Consummer {
 		Consummer other = (Consummer) obj;
 		if (id != other.id)
 			return false;
-		if (userId != other.userId)
+		if (user == null) {
+			if (other.user != null)
+				return false;
+		} else if (!user.equals(other.user))
 			return false;
 		if (username == null) {
 			if (other.username != null)
