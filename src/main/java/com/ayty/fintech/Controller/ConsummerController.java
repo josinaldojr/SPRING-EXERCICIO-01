@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ayty.fintech.Entity.Consummer;
 import com.ayty.fintech.Exception.ResourceNotFoundException;
+import com.ayty.fintech.Exception.UserAlreadyExistException;
 import com.ayty.fintech.Service.ConsummerService;
 
 @RestController
@@ -42,7 +43,12 @@ public class ConsummerController {
 	
 	@PostMapping("/users/consummers")
 	public ResponseEntity<Consummer> saveConsummer(@RequestBody @Validated Consummer consummer) {
-		return new ResponseEntity<Consummer> (this.consummerService.saveConsummer(consummer), HttpStatus.CREATED);
+		try {
+			return new ResponseEntity<Consummer> (this.consummerService.saveConsummer(consummer), HttpStatus.CREATED);
+		} catch (UserAlreadyExistException e) {
+			return new ResponseEntity<>(HttpStatus.CONFLICT); 
+		}
+		
 	}
 
 }

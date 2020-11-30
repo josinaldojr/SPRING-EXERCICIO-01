@@ -1,12 +1,14 @@
 package com.ayty.fintech.Entity;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 public class Consummer {
@@ -18,8 +20,7 @@ public class Consummer {
 	@Column(nullable = false, unique = true)
     private String username;
 	
-	@Column(nullable = false, unique = true)
-	@JsonProperty(value = "user_id")
+	@OneToOne(targetEntity = User.class, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private User user;
 	
 	public Consummer() {}

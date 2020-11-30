@@ -7,8 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ayty.fintech.Entity.Consummer;
+
 import com.ayty.fintech.Exception.ResourceNotFoundException;
+import com.ayty.fintech.Exception.UserAlreadyExistException;
 import com.ayty.fintech.Repository.ConsummerRepository;
+
 
 @Service
 public class ConsummerService {
@@ -33,7 +36,12 @@ public class ConsummerService {
 		}
 	}
 	
-	public Consummer saveConsummer(Consummer consummer) {
-		return consummerRepository.save(consummer);
+	public Consummer saveConsummer(Consummer consummer) throws UserAlreadyExistException {
+		Optional<Consummer> userFirst = consummerRepository.findById(consummer.getId());
+		if(userFirst.isPresent()) {
+			throw new UserAlreadyExistException("No user for this ID");
+		} else {
+			return consummerRepository.save(consummer);
+		}
 	}
 }
